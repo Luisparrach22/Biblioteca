@@ -3,19 +3,36 @@
 .idea/
 *.iml
 .classpath
+**/.classpath
 .project
+**/.project
 .settings/
+**/.settings/
+*.pref
+*.factorypath
 
 # Compiled Java output & build artifacts
 *.class
+**/*.class
 bin/
+**/bin/
 build/
+**/build/
 dist/
+**/dist/
+target/
+**/target/
+*.jar
+*.war
+*.ear
 
 # OS generated files
 .DS_Store
+**/.DS_Store
 Thumbs.db
+*.tmp
 
 # Configuration & environment files
 config.properties
 .env
+!.env.example

@@ -1,1 +1,21 @@
-/.metadata/
+# Eclipse & IDE metadata
+.metadata/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# Compiled Java output & build artifacts
+*.class
+bin/
+build/
+dist/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Configuration & environment files
+config.properties
+.env

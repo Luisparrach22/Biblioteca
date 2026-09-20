@@ -1,0 +1,2 @@
+# Archivo de persistencia de libros
+# Formato por línea: id^titulo^autor^precio^stock

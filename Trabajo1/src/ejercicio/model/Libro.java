@@ -1,5 +1,7 @@
 package ejercicio.model;
 
+import java.util.Objects;
+
 public class Libro {
     private int id;
     private String titulo;

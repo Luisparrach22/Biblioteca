@@ -1,5 +1,4 @@
 package ejercicio.model;
-
 import java.util.Objects;
 
 public class Libro {
@@ -15,6 +14,7 @@ public class Libro {
         this.autor = autor.trim();
         this.precio = precio;
         this.stock = stock;
+
     }
 
     public boolean validarDatos(int id, String titulo, String autor, double precio, int stock){

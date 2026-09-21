@@ -6,7 +6,7 @@ USE biblioteca;
 -- Tabla de libros
 DROP TABLE IF EXISTS libros;
 CREATE TABLE libros (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id VARCHAR(50) PRIMARY KEY,
     titulo VARCHAR(255) NOT NULL,
     autor VARCHAR(255) NOT NULL,
     precio DOUBLE NOT NULL,

@@ -2,25 +2,24 @@ package ejercicio.model;
 import java.util.Objects;
 
 public class Libro {
-    private int id;
+    private String id;
     private String titulo;
     private String autor;
     private double precio;
     private int stock;
 
-    public Libro(int id, String titulo, String autor, double precio, int stock) {
-        this.id = id;
-        this.titulo = titulo.trim();
-        this.autor = autor.trim();
+    public Libro(String id, String titulo, String autor, double precio, int stock) {
+        this.id = id != null ? id.trim() : "";
+        this.titulo = titulo != null ? titulo.trim() : "";
+        this.autor = autor != null ? autor.trim() : "";
         this.precio = precio;
         this.stock = stock;
-
     }
 
-    public boolean validarDatos(int id, String titulo, String autor, double precio, int stock){
+    public boolean validarDatos(String id, String titulo, String autor, double precio, int stock){
 
-        if (id <= 0){
-            System.out.println("El id debe ser mayor que cero.");
+        if (id == null || id.isBlank()){
+            System.out.println("El id es obligatorio.");
             return false;
         }
 
@@ -49,7 +48,7 @@ public class Libro {
 
     // Getters
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -73,7 +72,7 @@ public class Libro {
     @Override
     public java.lang.String toString() {
         return "Libro:" +
-                "id=" + id +
+                "id='" + id + '\'' +
                 ", titulo='" + titulo + '\'' +
                 ", autor='" + autor + '\'' +
                 ", precio=" + precio +
@@ -92,7 +91,7 @@ public class Libro {
             return false;
         }
 
-        return id == otroLibro.id;
+        return Objects.equals(id, otroLibro.id);
     }
 
     @Override

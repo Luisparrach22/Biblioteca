@@ -175,6 +175,16 @@ public class LibroRepositoryArchivo implements LibroRepository {
 
     @Override
     public boolean copiar(LibroRepository destino) {
-        return false;
+        List<Libro> misLibros = cargarLibros();
+
+        if (misLibros.isEmpty()) {
+            return false;
+        }
+
+        for (Libro l : misLibros) {
+            destino.insertar(l);
+        }
+
+        return true;
     }
 }

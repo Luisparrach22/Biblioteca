@@ -139,11 +139,37 @@ public class LibroRepositoryArchivo implements LibroRepository {
 
     @Override
     public boolean insertar(Libro libro) {
-        return false;
+        List<Libro> lista = cargarLibros();
+
+        for (Libro l : lista) {
+            if (l.getId().equals(libro.getId())) {
+                System.out.println("El libro con ID " + libro.getId() + " ya existe.");
+                return false;
+            }
+        }
+
+        lista.add(libro);
+        return guardarLibros(lista);
     }
 
     @Override
     public boolean eliminarPorTitulo(String titulo) {
+        List<Libro> lista = cargarLibros();
+        List<Libro> nuevaLista = new ArrayList<>();
+        boolean encontrado = false;
+
+        for (Libro l : lista) {
+            if (l.getTitulo().equalsIgnoreCase(titulo)) {
+                encontrado = true;
+            } else {
+                nuevaLista.add(l);
+            }
+        }
+
+        if (encontrado) {
+            return guardarLibros(nuevaLista);
+        }
+
         return false;
     }
 

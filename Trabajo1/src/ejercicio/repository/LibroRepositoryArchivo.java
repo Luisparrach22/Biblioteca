@@ -83,22 +83,58 @@ public class LibroRepositoryArchivo implements LibroRepository {
 
     @Override
     public List<Libro> buscarPorTitulo(String titulo) {
-        return new ArrayList<>();
+        List<Libro> lista = cargarLibros();
+        List<Libro> resultado = new ArrayList<>();
+
+        for (Libro libro : lista) {
+            if (libro.getTitulo().toLowerCase().contains(titulo.toLowerCase())) {
+                resultado.add(libro);
+            }
+        }
+
+        return resultado;
     }
 
     @Override
     public List<Libro> buscarPorAutor(String autor) {
-        return new ArrayList<>();
+        List<Libro> lista = cargarLibros();
+        List<Libro> resultado = new ArrayList<>();
+
+        for (Libro libro : lista) {
+            if (libro.getAutor().toLowerCase().contains(autor.toLowerCase())) {
+                resultado.add(libro);
+            }
+        }
+
+        return resultado;
     }
 
     @Override
     public List<Libro> buscarPorRangoPrecio(double precioMin, double precioMax) {
-        return new ArrayList<>();
+        List<Libro> lista = cargarLibros();
+        List<Libro> resultado = new ArrayList<>();
+
+        for (Libro libro : lista) {
+            if (libro.getPrecio() >= precioMin && libro.getPrecio() <= precioMax) {
+                resultado.add(libro);
+            }
+        }
+
+        return resultado;
     }
 
     @Override
     public List<Libro> buscarPorStockMinimo(int stockMinimo) {
-        return new ArrayList<>();
+        List<Libro> lista = cargarLibros();
+        List<Libro> resultado = new ArrayList<>();
+
+        for (Libro libro : lista) {
+            if (libro.getStock() >= stockMinimo) {
+                resultado.add(libro);
+            }
+        }
+
+        return resultado;
     }
 
     @Override

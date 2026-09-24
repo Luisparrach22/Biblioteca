@@ -2,28 +2,23 @@ package ejercicio.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class ConexionBD {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/biblioteca";
-    private static final String USER = "root";
-    private static final String PASS = "root";
-
     public static Connection getConnection() {
+        Dotenv dotenv = Dotenv.load();
 
-        Connection con = null;
+        String url = dotenv.get("DB_URL");
+        String user = dotenv.get("DB_USER");
+        String pass = dotenv.get("DB_PASS");
 
         try {
-
-            con = DriverManager.getConnection(URL, USER, PASS);
-
-        } catch (SQLException e) {
-
-            System.out.println("Error al conectar con la base de datos: " + e.getMessage());
-
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            return DriverManager.getConnection(url, user, pass);
+        } catch (Exception e) {
+            System.out.println("Error de conexión: " + e.getMessage());
+            return null;
         }
-
-        return con;
     }
 }

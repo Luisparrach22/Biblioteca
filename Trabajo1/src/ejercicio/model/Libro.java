@@ -8,7 +8,13 @@ public class Libro {
     private double precio;
     private int stock;
 
-    public Libro(String id, String titulo, String autor, double precio, int stock) {
+    
+    
+    public Libro() {
+		super();
+	}
+
+	public Libro(String id, String titulo, String autor, double precio, int stock) {
         this.id = id != null ? id.trim() : "";
         this.titulo = titulo != null ? titulo.trim() : "";
         this.autor = autor != null ? autor.trim() : "";
@@ -46,9 +52,32 @@ public class Libro {
         return true;
     }
 
+    
+    
+    
     // Getters
 
-    public String getId() {
+    public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
+	}
+
+	public void setAutor(String autor) {
+		this.autor = autor;
+	}
+
+	public void setPrecio(double precio) {
+		this.precio = precio;
+	}
+
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+
+	public String getId() {
         return id;
     }
 

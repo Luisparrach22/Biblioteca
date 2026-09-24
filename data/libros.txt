@@ -1,2 +1,10 @@
 # Archivo de persistencia de libros
 # Formato por línea: id^titulo^autor^precio^stock
+L001^Don Quijote de la Mancha^Miguel de Cervantes^19.95^12
+L002^Cien años de soledad^Gabriel García Márquez^15.5^8
+L003^1984^George Orwell^12.99^15
+L004^El Principito^Antoine de Saint-Exupéry^9.95^20
+L005^Fahrenheit 451^Ray Bradbury^11.8^5
+L006^El Señor de los Anillos^J.R.R. Tolkien^25.0^10
+L007^Orgullo y Prejuicio^Jane Austen^10.5^7
+hola1^prueba^luis^2.0^8

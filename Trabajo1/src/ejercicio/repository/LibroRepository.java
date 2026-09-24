@@ -1,8 +1,6 @@
 package ejercicio.repository;
 
-
 import java.util.List;
-
 import ejercicio.model.Libro;
 
 public interface LibroRepository {
@@ -20,6 +18,8 @@ public interface LibroRepository {
     boolean insertar(Libro libro);
 
     boolean eliminarPorTitulo(String titulo);
+
+    boolean eliminarPorId(String id);
 
     boolean copiar(LibroRepository destino);
 }

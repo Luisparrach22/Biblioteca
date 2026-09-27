@@ -201,6 +201,7 @@ public class Main {
                     if (nuevo.validarDatos(id, titulo, autor, precio, stock)) {
                         if (repo.insertar(nuevo)) {
                             System.out.println("Libro insertado correctamente.");
+                            sincronizador.sincronizar();
                         } else {
                             System.out.println("Error al insertar el libro.");
                         }
@@ -218,6 +219,7 @@ public class Main {
                         Libro l = encontrados.get(0);
                         if (repo.eliminarPorId(l.getId())) {
                             System.out.println("Libro eliminado.");
+                            sincronizador.sincronizar();
                         } else {
                             System.out.println("Error al eliminar.");
                         }
@@ -230,6 +232,7 @@ public class Main {
                         String idEliminar = sc.nextLine();
                         if (repo.eliminarPorId(idEliminar)) {
                             System.out.println("Libro eliminado.");
+                            sincronizador.sincronizar();
                         } else {
                             System.out.println("Error al eliminar.");
                         }
@@ -239,6 +242,7 @@ public class Main {
                 case 8:
                     if (repo.copiar(repoDestino)) {
                         System.out.println("Copia de datos realizada.");
+                        sincronizador.sincronizar();
                     } else {
                         System.out.println("Error al realizar la copia.");
                     }

@@ -226,14 +226,29 @@ public class LibroRepositoryMySQL implements LibroRepository {
             return false;
         }
 
+        List<Libro> existentes = destino.obtenerTodos();
         int copiados = 0;
+        int yaExisten = 0;
+
         for (Libro l : misLibros) {
-            if (destino.insertar(l)) {
+            if (contieneId(existentes, l.getId())) {
+                yaExisten++;
+            } else if (destino.insertar(l)) {
+                existentes.add(l);
                 copiados++;
             }
         }
 
-        System.out.println("Se copiaron " + copiados + " libros al repositorio destino.");
-        return copiados > 0;
+        System.out.println("Copia realizada: " + copiados + " insertados, " + yaExisten + " ya existian.");
+        return copiados + yaExisten == misLibros.size();
+    }
+
+    private boolean contieneId(List<Libro> lista, String id) {
+        for (Libro libro : lista) {
+            if (libro.getId().equalsIgnoreCase(id)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

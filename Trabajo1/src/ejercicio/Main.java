@@ -1,5 +1,6 @@
 package ejercicio;
 
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Scanner;
 
@@ -7,10 +8,74 @@ import ejercicio.model.Libro;
 import ejercicio.repository.LibroRepository;
 import ejercicio.repository.LibroRepositoryArchivo;
 import ejercicio.repository.LibroRepositoryMySQL;
+import ejercicio.util.Sincronizador;
 
 public class Main {
 
+	
+	  private static boolean ejecutarComando(String comando) {
+	        try {
+	            String os = System.getProperty("os.name").toLowerCase();
+	            String[] cmd;
+	            if (os.contains("win")) {
+	                cmd = new String[]{"cmd.exe", "/c", comando};
+	            } else {
+	                cmd = new String[]{"sh", "-c", comando};
+	            }
+	            ProcessBuilder pb = new ProcessBuilder(cmd);
+	            pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+	            pb.redirectError(ProcessBuilder.Redirect.DISCARD);
+	            Process p = pb.start();
+	            p.waitFor();
+	            return p.exitValue() == 0;
+	        } catch (Exception e) {
+	            return false;
+	        }
+	    }
+	
+	
+	
     public static void main(String[] args) {
+    	
+    	  System.out.println("Verificando Docker...");
+
+          if (!ejecutarComando("docker --version")) {
+              System.out.println("ERROR: Docker no esta instalado.");
+              System.out.println("Instala Docker Desktop desde: https://www.docker.com/products/docker-desktop/");
+              return;
+          }
+
+          if (!ejecutarComando("docker info")) {
+              System.out.println("ERROR: Docker no esta ejecutandose.");
+              System.out.println("Abre Docker Desktop y vuelve a intentarlo.");
+              return;
+          }
+
+          System.out.println("Docker detectado correctamente.");
+
+          String rutaCompose = Paths.get(System.getProperty("user.dir"), "docker-compose.yml").toString();
+
+          System.out.println("Iniciando contenedor MySQL...");
+          boolean levantado = ejecutarComando("docker compose -f \"" + rutaCompose + "\" up -d");
+
+          if (!levantado) {
+              levantado = ejecutarComando("docker-compose -f \"" + rutaCompose + "\" up -d");
+          }
+
+          if (!levantado) {
+              System.out.println("ERROR: No se pudo iniciar docker-compose.");
+              System.out.println("Asegurate de que docker-compose.yml esta en la raiz del proyecto.");
+              return;
+          }
+
+          System.out.println("Contenedor MySQL iniciado correctamente.");
+          System.out.println();
+
+          Sincronizador sincronizador = new Sincronizador();
+          sincronizador.sincronizar();
+          System.out.println();
+          
+          
         Scanner sc = new Scanner(System.in);
 
         System.out.println("--- Gestion Biblioteca  ---");
@@ -191,5 +256,12 @@ public class Main {
         } while (opcion != 9);
 
         sc.close();
+        
+        System.out.println("Deteniendo contenedor MySQL...");
+        String rutaCompose2 = Paths.get(System.getProperty("user.dir"), "docker-compose.yml").toString();
+        if (!ejecutarComando("docker compose -f \"" + rutaCompose2 + "\" down")) {
+            ejecutarComando("docker-compose -f \"" + rutaCompose2 + "\" down");
+        }
+        System.out.println("Contenedor detenido. Hasta luego!");
     }
 }

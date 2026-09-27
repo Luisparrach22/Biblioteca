@@ -8,6 +8,7 @@ import ejercicio.model.Libro;
 import ejercicio.repository.LibroRepository;
 import ejercicio.repository.LibroRepositoryArchivo;
 import ejercicio.repository.LibroRepositoryMySQL;
+import ejercicio.util.ConexionBD;
 import ejercicio.util.Sincronizador;
 
 public class Main {
@@ -18,20 +19,45 @@ public class Main {
 	            String os = System.getProperty("os.name").toLowerCase();
 	            String[] cmd;
 	            if (os.contains("win")) {
+	                // Windows: ejecuta el comando mediante el intérprete cmd.exe.
 	                cmd = new String[]{"cmd.exe", "/c", comando};
 	            } else {
+	                // macOS y otros sistemas Unix/Linux: ejecuta el comando mediante sh.
 	                cmd = new String[]{"sh", "-c", comando};
 	            }
 	            ProcessBuilder pb = new ProcessBuilder(cmd);
 	            pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
 	            pb.redirectError(ProcessBuilder.Redirect.DISCARD);
-	            Process p = pb.start();
-	            p.waitFor();
-	            return p.exitValue() == 0;
-	        } catch (Exception e) {
-	            return false;
-	        }
-	    }
+            Process p = pb.start();
+            p.waitFor();
+            return p.exitValue() == 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static void esperarMySQL() {
+        System.out.print("Esperando a que MySQL este disponible");
+        long limite = System.currentTimeMillis() + 60_000L;
+
+        while (System.currentTimeMillis() < limite) {
+            if (ConexionBD.estaDisponible()) {
+                System.out.println(" OK");
+                return;
+            }
+            System.out.print(".");
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+
+        System.out.println();
+        System.out.println("Aviso: MySQL no responde, se continuara sin el.");
+    }
+
 	
 	
 	
@@ -69,13 +95,9 @@ public class Main {
           }
 
           System.out.println("Contenedor MySQL iniciado correctamente.");
+          esperarMySQL();
           System.out.println();
 
-          Sincronizador sincronizador = new Sincronizador();
-          sincronizador.sincronizar();
-          System.out.println();
-          
-          
         Scanner sc = new Scanner(System.in);
 
         System.out.println("--- Gestion Biblioteca  ---");
@@ -95,6 +117,10 @@ public class Main {
             repo = new LibroRepositoryArchivo();
             repoDestino = new LibroRepositoryMySQL();
         }
+
+        Sincronizador sincronizador = new Sincronizador(repo, repoDestino);
+        sincronizador.sincronizar();
+        System.out.println();
 
         int opcion = 0;
 
@@ -201,7 +227,7 @@ public class Main {
                     if (nuevo.validarDatos(id, titulo, autor, precio, stock)) {
                         if (repo.insertar(nuevo)) {
                             System.out.println("Libro insertado correctamente.");
-                            sincronizador.sincronizar();
+                            sincronizador.trasInsertar(nuevo);
                         } else {
                             System.out.println("Error al insertar el libro.");
                         }
@@ -219,7 +245,7 @@ public class Main {
                         Libro l = encontrados.get(0);
                         if (repo.eliminarPorId(l.getId())) {
                             System.out.println("Libro eliminado.");
-                            sincronizador.sincronizar();
+                            sincronizador.trasEliminar(l.getId());
                         } else {
                             System.out.println("Error al eliminar.");
                         }
@@ -232,7 +258,7 @@ public class Main {
                         String idEliminar = sc.nextLine();
                         if (repo.eliminarPorId(idEliminar)) {
                             System.out.println("Libro eliminado.");
-                            sincronizador.sincronizar();
+                            sincronizador.trasEliminar(idEliminar);
                         } else {
                             System.out.println("Error al eliminar.");
                         }
@@ -242,7 +268,6 @@ public class Main {
                 case 8:
                     if (repo.copiar(repoDestino)) {
                         System.out.println("Copia de datos realizada.");
-                        sincronizador.sincronizar();
                     } else {
                         System.out.println("Error al realizar la copia.");
                     }

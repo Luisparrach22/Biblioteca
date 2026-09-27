@@ -15,10 +15,13 @@ public class LibroRepositoryArchivo implements LibroRepository {
     private String rutaArchivo = "data/libros.txt";
 
     public LibroRepositoryArchivo() {
-        File archivo = new File(rutaArchivo);
-        if (!archivo.exists() && new File("../data/libros.txt").exists()) {
-            this.rutaArchivo = "../data/libros.txt";
+        File archivoPredeterminado = new File(rutaArchivo);
+        File archivoAlternativo = new File("../data/libros.txt");
+
+        if (!archivoPredeterminado.exists() && archivoAlternativo.exists()) {
+            rutaArchivo = archivoAlternativo.getPath();
         }
+
         asegurarDatosIniciales();
     }
 
@@ -28,8 +31,7 @@ public class LibroRepositoryArchivo implements LibroRepository {
     }
 
     private void asegurarDatosIniciales() {
-        File archivo = new File(rutaArchivo);
-        File directorio = archivo.getParentFile();
+        File directorio = new File(rutaArchivo).getParentFile();
         if (directorio != null && !directorio.exists()) {
             directorio.mkdirs();
         }

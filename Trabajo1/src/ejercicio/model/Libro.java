@@ -1,7 +1,7 @@
 package ejercicio.model;
 
 import java.util.Objects;
-
+import java.util.regex.Pattern;
 public class Libro {
 
     private String id;
@@ -54,7 +54,8 @@ public class Libro {
         if (lineaCadena == null || lineaCadena.isBlank() || lineaCadena.startsWith("#")) {
             return null;
         }
-        String[] partes = lineaCadena.split("\\^");
+        //Dividir la línea en partes usando el carácter '^' como delimitador
+        String[] partes = lineaCadena.split(Pattern.quote("^"));
         if (partes.length == 5) {
             try {
                 String id = partes[0].trim();
@@ -112,8 +113,8 @@ public class Libro {
 
     @Override
     public String toString() {
-        return String.format("Libro [ID: %s | Título: %s | Autor: %s | Precio: %.2f€ | Stock: %d]",
-                id, titulo, autor, precio, stock);
+        return "id=" + id + ", titulo=" + titulo + ", autor=" + autor
+                + ", precio=" + precio + ", stock=" + stock;
     }
 
     @Override

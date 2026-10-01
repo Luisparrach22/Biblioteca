@@ -10,6 +10,12 @@ import java.util.List;
 
 import ejercicio.model.Libro;
 
+/**
+ * Repositorio de acceso a datos para la entidad Libro utilizando un archivo de texto como persistencia.
+ * 
+ * @author Luis Parra
+ * @version 1.0
+ */
 public class LibroRepositoryArchivo implements LibroRepository {
 
     private String rutaArchivo = "data/libros.txt";

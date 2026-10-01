@@ -1,3 +1,9 @@
+/**
+ * @author Fabricio
+ * @author Luis
+ * @since 1.0
+ * @
+ */
 package ejercicio.model;
 
 import java.util.Objects;

@@ -9,14 +9,6 @@ import java.util.regex.Pattern;
  * @since 1.0
  */
 public class Libro {
-	/**
-	 * 
-	 * @param id creamos parametro String 
-	 * @param titulo Creamos parametro String
-	 * @param autor Creamos parametro String
-	 * @param precio Creamos parametro double
-	 * @param stock Creamos parametro int
-	 */
     private String id;
     private String titulo;
     private String autor;
@@ -24,19 +16,21 @@ public class Libro {
     private int stock;
 
     /**
-     * Creamos constructor vacio 
+     * Creamos constructor vacio,sin inicializar sus datos.
      */
     public Libro() {
         super();
     }
-/**
- * 
- * @param id 
- * @param titulo
- * @param autor
- * @param precio
- * @param stock
- */
+
+    /**
+     * Crea un libro con los datos indicados.
+     *
+     * @param id identificador del libro
+     * @param titulo título del libro
+     * @param autor autor del libro
+     * @param precio precio del libro
+     * @param stock cantidad de ejemplares disponibles
+     */
     public Libro(String id, String titulo, String autor, double precio, int stock) {
         this.id = id != null ? id.trim() : "";
         this.titulo = titulo != null ? titulo.trim() : "";
@@ -44,7 +38,16 @@ public class Libro {
         this.precio = precio;
         this.stock = stock;
     }
-
+    /**
+     * Valida los datos proporcionados para un libro.
+     *
+     * @param id identificador del libro
+     * @param titulo título del libro
+     * @param autor autor del libro
+     * @param precio precio del libro
+     * @param stock cantidad de ejemplares disponibles
+     * @return true si todos los datos son válidos; false en caso contrario
+     */
     public boolean validarDatos(String id, String titulo, String autor, double precio, int stock) {
         if (id == null || id.isBlank()) {
             System.out.println("El id es obligatorio.");
@@ -69,10 +72,24 @@ public class Libro {
         return true;
     }
 
+    /**
+     * Convierte los datos del libro en una línea de texto.
+     * Los datos se separan utilizando el carácter "^".
+     *
+     * @return una línea con los datos del libro separados por "^"
+     */
     public String toCSV() {
         return id + "^" + titulo + "^" + autor + "^" + precio + "^" + stock;
     }
 
+
+/**
+ * Crea un libro a partir de una línea de texto.
+ * La línea debe tener los datos separados por "^".
+ *
+ * @param lineaCadena línea de texto con los datos del libro
+ * @return un libro creado con los datos de la línea, o null si la línea no es válida
+ */
     public static Libro fromCSV(String lineaCadena) {
         if (lineaCadena == null || lineaCadena.isBlank() || lineaCadena.startsWith("#")) {
             return null;
@@ -93,15 +110,29 @@ public class Libro {
         }
         return null;
     }
-
+    
+    /**
+     * Devuelve el identificador del libro.
+     *
+     * @return identificador del libro
+     */
     public String getId() {
         return id;
     }
-
+    /**
+     * Asigna un identificador al libro.
+     *
+     * @param id identificador que se asignará al libro
+     */
     public void setId(String id) {
         this.id = id != null ? id.trim() : "";
     }
 
+    /**
+     * Devuelve el título del libro.
+     *
+     * @return título del libro
+     */
     public String getTitulo() {
         return titulo;
     }

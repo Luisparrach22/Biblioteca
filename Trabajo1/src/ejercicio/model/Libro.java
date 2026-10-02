@@ -1,25 +1,42 @@
+package ejercicio.model;
+import java.util.Objects;
+import java.util.regex.Pattern;
 /**
+ * Representa un libro de la biblioteca.
+ *
  * @author Fabricio
  * @author Luis
  * @since 1.0
- * @
  */
-package ejercicio.model;
-
-import java.util.Objects;
-import java.util.regex.Pattern;
 public class Libro {
-
+	/**
+	 * 
+	 * @param id creamos parametro String 
+	 * @param titulo Creamos parametro String
+	 * @param autor Creamos parametro String
+	 * @param precio Creamos parametro double
+	 * @param stock Creamos parametro int
+	 */
     private String id;
     private String titulo;
     private String autor;
     private double precio;
     private int stock;
 
+    /**
+     * Creamos constructor vacio 
+     */
     public Libro() {
         super();
     }
-
+/**
+ * 
+ * @param id 
+ * @param titulo
+ * @param autor
+ * @param precio
+ * @param stock
+ */
     public Libro(String id, String titulo, String autor, double precio, int stock) {
         this.id = id != null ? id.trim() : "";
         this.titulo = titulo != null ? titulo.trim() : "";

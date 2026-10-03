@@ -11,10 +11,12 @@ import java.util.List;
 import ejercicio.model.Libro;
 
 /**
- * Clase que gestiona la lectura y escritura de libros en un archivo de texto (.txt).
+ * Clase que gestiona la lectura y escritura de libros en un archivo de texto
+ * (.txt).
  * Implementa la interfaz LibroRepository.
  * 
  * @author Luis Parra
+ * @author Fabricio
  * @version 1.0
  */
 public class LibroRepositoryArchivo implements LibroRepository {
@@ -130,7 +132,8 @@ public class LibroRepositoryArchivo implements LibroRepository {
     public List<Libro> buscarPorTitulo(String titulo) {
         List<Libro> lista = cargarLibros();
         List<Libro> resultado = new ArrayList<>();
-        if (titulo == null) return resultado;
+        if (titulo == null)
+            return resultado;
 
         String filtro = titulo.trim().toLowerCase();
         for (Libro libro : lista) {
@@ -151,7 +154,8 @@ public class LibroRepositoryArchivo implements LibroRepository {
     public List<Libro> buscarPorAutor(String autor) {
         List<Libro> lista = cargarLibros();
         List<Libro> resultado = new ArrayList<>();
-        if (autor == null) return resultado;
+        if (autor == null)
+            return resultado;
 
         String filtro = autor.trim().toLowerCase();
         for (Libro libro : lista) {
@@ -209,7 +213,8 @@ public class LibroRepositoryArchivo implements LibroRepository {
      */
     @Override
     public boolean insertar(Libro libro) {
-        if (libro == null) return false;
+        if (libro == null)
+            return false;
         List<Libro> lista = cargarLibros();
 
         for (Libro l : lista) {
@@ -231,7 +236,8 @@ public class LibroRepositoryArchivo implements LibroRepository {
      */
     @Override
     public boolean eliminarPorTitulo(String titulo) {
-        if (titulo == null) return false;
+        if (titulo == null)
+            return false;
         List<Libro> lista = cargarLibros();
         List<Libro> nuevaLista = new ArrayList<>();
         boolean encontrado = false;
@@ -258,7 +264,8 @@ public class LibroRepositoryArchivo implements LibroRepository {
      */
     @Override
     public boolean eliminarPorId(String id) {
-        if (id == null) return false;
+        if (id == null)
+            return false;
         List<Libro> lista = cargarLibros();
         List<Libro> nuevaLista = new ArrayList<>();
         boolean encontrado = false;
@@ -285,7 +292,8 @@ public class LibroRepositoryArchivo implements LibroRepository {
      */
     @Override
     public boolean copiar(LibroRepository destino) {
-        if (destino == null) return false;
+        if (destino == null)
+            return false;
         List<Libro> misLibros = cargarLibros();
 
         if (misLibros.isEmpty()) {
@@ -314,7 +322,7 @@ public class LibroRepositoryArchivo implements LibroRepository {
      * Comprueba si un ID de libro ya existe en una lista.
      * 
      * @param lista Lista de libros donde buscar
-     * @param id ID del libro a comprobar
+     * @param id    ID del libro a comprobar
      * @return true si el ID ya existe en la lista, false si no
      */
     private boolean contieneId(List<Libro> lista, String id) {

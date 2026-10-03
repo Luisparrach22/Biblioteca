@@ -11,23 +11,34 @@ import ejercicio.repository.LibroRepositoryMySQL;
 import ejercicio.util.ConexionBD;
 import ejercicio.util.Sincronizador;
 
+/**
+ * Clase principal de la aplicacion de Gestion de Biblioteca.
+ * Controla el arranque de Docker para MySQL, el menu interactivo por consola
+ * y la sincronizacion entre fuentes de datos.
+ * 
+ * @author Luis Parra
+ * @author Fabricio
+ */
 public class Main {
 
-	
-	  private static boolean ejecutarComando(String comando) {
-	        try {
-	            String os = System.getProperty("os.name").toLowerCase();
-	            String[] cmd;
-	            if (os.contains("win")) {
-	                // Windows: ejecuta el comando mediante el intérprete cmd.exe.
-	                cmd = new String[]{"cmd.exe", "/c", comando};
-	            } else {
-	                // macOS y otros sistemas Unix/Linux: ejecuta el comando mediante sh.
-	                cmd = new String[]{"sh", "-c", comando};
-	            }
-	            ProcessBuilder pb = new ProcessBuilder(cmd);
-	            pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
-	            pb.redirectError(ProcessBuilder.Redirect.DISCARD);
+    /**
+     * Ejecuta un comando en la terminal (cmd.exe en Windows o sh en Mac/Linux).
+     * Devuelve true si el comando finalizo correctamente (exit value 0).
+     */
+    private static boolean ejecutarComando(String comando) {
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+            String[] cmd;
+            if (os.contains("win")) {
+                // Windows: ejecuta el comando mediante el intérprete cmd.exe.
+                cmd = new String[]{"cmd.exe", "/c", comando};
+            } else {
+                // macOS y otros sistemas Unix/Linux: ejecuta el comando mediante sh.
+                cmd = new String[]{"sh", "-c", comando};
+            }
+            ProcessBuilder pb = new ProcessBuilder(cmd);
+            pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+            pb.redirectError(ProcessBuilder.Redirect.DISCARD);
             Process p = pb.start();
             p.waitFor();
             return p.exitValue() == 0;
@@ -36,6 +47,9 @@ public class Main {
         }
     }
 
+    /**
+     * Revisa en bucle durante un maximo de 60 segundos si MySQL ya acepta conexiones.
+     */
     private static void esperarMySQL() {
         System.out.print("Esperando a que MySQL este disponible");
         long limite = System.currentTimeMillis() + 60_000L;
@@ -58,45 +72,47 @@ public class Main {
         System.out.println("Aviso: MySQL no responde, se continuara sin el.");
     }
 
-	
-	
-	
     public static void main(String[] args) {
-    	
-    	  System.out.println("Verificando Docker...");
+        
+        System.out.println("Verificando Docker...");
 
-          if (!ejecutarComando("docker --version")) {
-              System.out.println("ERROR: Docker no esta instalado.");
-              System.out.println("Instala Docker Desktop desde: https://www.docker.com/products/docker-desktop/");
-              return;
-          }
+        // Comprobamos si Docker esta instalado en el equipo
+        if (!ejecutarComando("docker --version")) {
+            System.out.println("ERROR: Docker no esta instalado.");
+            System.out.println("Instala Docker Desktop desde: https://www.docker.com/products/docker-desktop/");
+            return;
+        }
 
-          if (!ejecutarComando("docker info")) {
-              System.out.println("ERROR: Docker no esta ejecutandose.");
-              System.out.println("Abre Docker Desktop y vuelve a intentarlo.");
-              return;
-          }
+        // Comprobamos si Docker Desktop esta abierto y funcionando
+        if (!ejecutarComando("docker info")) {
+            System.out.println("ERROR: Docker no esta ejecutandose.");
+            System.out.println("Abre Docker Desktop y vuelve a intentarlo.");
+            return;
+        }
 
-          System.out.println("Docker detectado correctamente.");
+        System.out.println("Docker detectado correctamente.");
 
-          String rutaCompose = Paths.get(System.getProperty("user.dir"), "docker-compose.yml").toString();
+        // Obtenemos la ruta del archivo docker-compose.yml en la raiz
+        String rutaCompose = Paths.get(System.getProperty("user.dir"), "docker-compose.yml").toString();
 
-          System.out.println("Iniciando contenedor MySQL...");
-          boolean levantado = ejecutarComando("docker compose -f \"" + rutaCompose + "\" up -d");
+        // Levantamos el contenedor de MySQL en segundo plano
+        System.out.println("Iniciando contenedor MySQL...");
+        boolean levantado = ejecutarComando("docker compose -f \"" + rutaCompose + "\" up -d");
 
-          if (!levantado) {
-              levantado = ejecutarComando("docker-compose -f \"" + rutaCompose + "\" up -d");
-          }
+        // Probamos con la sintaxis antigua con guion por si acaso
+        if (!levantado) {
+            levantado = ejecutarComando("docker-compose -f \"" + rutaCompose + "\" up -d");
+        }
 
-          if (!levantado) {
-              System.out.println("ERROR: No se pudo iniciar docker-compose.");
-              System.out.println("Asegurate de que docker-compose.yml esta en la raiz del proyecto.");
-              return;
-          }
+        if (!levantado) {
+            System.out.println("ERROR: No se pudo iniciar docker-compose.");
+            System.out.println("Asegurate de que docker-compose.yml esta en la raiz del proyecto.");
+            return;
+        }
 
-          System.out.println("Contenedor MySQL iniciado correctamente.");
-          esperarMySQL();
-          System.out.println();
+        System.out.println("Contenedor MySQL iniciado correctamente.");
+        esperarMySQL();
+        System.out.println();
 
         Scanner sc = new Scanner(System.in);
 

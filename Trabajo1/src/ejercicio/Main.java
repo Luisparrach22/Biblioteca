@@ -116,6 +116,7 @@ public class Main {
 
         Scanner sc = new Scanner(System.in);
 
+        // Elegimos cual sera la fuente principal de datos
         System.out.println("--- Gestion Biblioteca  ---");
         System.out.println("1. Archivo (.txt)");
         System.out.println("2. MySQL");
@@ -126,6 +127,7 @@ public class Main {
         LibroRepository repo;
         LibroRepository repoDestino;
 
+        // Segun la eleccion, asignamos cual es el activo y cual es el secundario
         if (opcionRepo == 2) {
             repo = new LibroRepositoryMySQL();
             repoDestino = new LibroRepositoryArchivo();
@@ -134,12 +136,14 @@ public class Main {
             repoDestino = new LibroRepositoryMySQL();
         }
 
+        // Ejecutamos la sincronizacion inicial al arrancar el programa
         Sincronizador sincronizador = new Sincronizador(repo, repoDestino);
         sincronizador.sincronizar();
         System.out.println();
 
         int opcion = 0;
 
+        // Bucle principal del menu hasta que el usuario elija salir (opcion 9)
         do {
             System.out.println("--- Menu ---");
             System.out.println("1. Listado de todos los libros");
@@ -161,6 +165,7 @@ public class Main {
 
             switch (opcion) {
                 case 1:
+                    // Opcion 1: Listar todo el catalogo
                     List<Libro> todos = repo.obtenerTodos();
                     if (todos.isEmpty()) {
                         System.out.println("No hay libros.");
@@ -172,6 +177,7 @@ public class Main {
                     break;
 
                 case 2:
+                    // Opcion 2: Filtro por titulo
                     System.out.print("Título a buscar: ");
                     String t = sc.nextLine();
                     List<Libro> porTitulo = repo.buscarPorTitulo(t);
@@ -185,6 +191,7 @@ public class Main {
                     break;
 
                 case 3:
+                    // Opcion 3: Filtro por autor
                     System.out.print("Autor a buscar: ");
                     String a = sc.nextLine();
                     List<Libro> porAutor = repo.buscarPorAutor(a);
@@ -198,6 +205,7 @@ public class Main {
                     break;
 
                 case 4:
+                    // Opcion 4: Busqueda entre precio minimo y maximo
                     System.out.print("Precio mínimo: ");
                     double pMin = Double.parseDouble(sc.nextLine());
                     System.out.print("Precio máximo: ");
@@ -214,6 +222,7 @@ public class Main {
                     break;
 
                 case 5:
+                    // Opcion 5: Filtrar por stock mayor o igual al indicado
                     System.out.print("Stock mínimo: ");
                     int sMin = Integer.parseInt(sc.nextLine());
 

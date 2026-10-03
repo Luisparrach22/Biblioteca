@@ -237,6 +237,7 @@ public class Main {
                     break;
 
                 case 6:
+                    // Opcion 6: Alta de un nuevo libro y propagacion al otro repo
                     System.out.print("ID: ");
                     String id = sc.nextLine();
                     System.out.print("Título: ");
@@ -252,6 +253,7 @@ public class Main {
                     if (nuevo.validarDatos(id, titulo, autor, precio, stock)) {
                         if (repo.insertar(nuevo)) {
                             System.out.println("Libro insertado correctamente.");
+                            // Notificamos al sincronizador para replicarlo en el otro origen
                             sincronizador.trasInsertar(nuevo);
                         } else {
                             System.out.println("Error al insertar el libro.");
@@ -260,6 +262,7 @@ public class Main {
                     break;
 
                 case 7:
+                    // Opcion 7: Eliminar libro por titulo o ID especifico si hay repetidos
                     System.out.print("Título del libro a eliminar: ");
                     String tEliminar = sc.nextLine();
                     List<Libro> encontrados = repo.buscarPorTitulo(tEliminar);
@@ -267,14 +270,17 @@ public class Main {
                     if (encontrados.isEmpty()) {
                         System.out.println("No existe ningún libro con ese título.");
                     } else if (encontrados.size() == 1) {
+                        // Si solo hay uno, lo borramos directamente
                         Libro l = encontrados.get(0);
                         if (repo.eliminarPorId(l.getId())) {
                             System.out.println("Libro eliminado.");
+                            // Propagamos la baja al otro repositorio
                             sincronizador.trasEliminar(l.getId());
                         } else {
                             System.out.println("Error al eliminar.");
                         }
                     } else {
+                        // Si coinciden varios por titulo, pedimos desempatar por ID
                         System.out.println("Hay varios libros con ese título:");
                         for (Libro l : encontrados) {
                             System.out.println("ID: " + l.getId() + " - " + l.getTitulo() + " (" + l.getAutor() + ")");
@@ -291,6 +297,7 @@ public class Main {
                     break;
 
                 case 8:
+                    // Opcion 8: Copiado masivo del repo activo al repo destino
                     if (repo.copiar(repoDestino)) {
                         System.out.println("Copia de datos realizada.");
                     } else {
@@ -311,6 +318,7 @@ public class Main {
 
         sc.close();
         
+        // Al terminar el programa, apagamos el contenedor de MySQL
         System.out.println("Deteniendo contenedor MySQL...");
         String rutaCompose2 = Paths.get(System.getProperty("user.dir"), "docker-compose.yml").toString();
         if (!ejecutarComando("docker compose -f \"" + rutaCompose2 + "\" down")) {

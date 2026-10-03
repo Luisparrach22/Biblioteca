@@ -84,7 +84,11 @@ public class Sincronizador {
         }
     }
 
+    /**
+     * Elimina el libro del otro repositorio para mantenerlos iguales al borrar.
+     */
     public void trasEliminar(String id) {
+        // Validamos que el ID tenga sentido y que la BD responda
         if (id == null || id.isBlank() || !listo()) return;
 
         if (otro.eliminarPorId(id)) {
@@ -94,6 +98,9 @@ public class Sincronizador {
         }
     }
 
+    /**
+     * Helper para comprobar si la base de datos MySQL esta activa.
+     */
     private boolean listo() {
         if (ConexionBD.estaDisponible()) {
             return true;
@@ -102,6 +109,9 @@ public class Sincronizador {
         return false;
     }
 
+    /**
+     * Comprueba si un libro con ese ID ya esta en la lista (sin distinguir mayusculas/minusculas).
+     */
     private boolean contieneLibro(List<Libro> lista, String id) {
         for (Libro libro : lista) {
             if (libro.getId().equalsIgnoreCase(id)) {

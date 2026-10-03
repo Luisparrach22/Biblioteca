@@ -1,17 +1,25 @@
+# Version de la sintaxis de Docker Compose
 version: '3.8'
 
+# Definicion de servicios/contenedores del proyecto
 services:
   mysql:
+    # Imagen oficial de MySQL en su version 8.0
     image: mysql:8.0
+    # Se reinicia automaticamente si falla, a menos que lo paremos nosotros
     restart: unless-stopped
+    # Variables de entorno para la contrasena de root y el nombre de la BD
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: biblioteca
+    # Mapeamos el puerto 3306 de nuestro equipo con el 3306 del contenedor
     ports:
       - "3306:3306"
+    # Volumenes: datos persistentes y script SQL que se ejecuta al arrancar por primera vez
     volumes:
       - mysql_data:/var/lib/mysql
       - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
+# Volumen con nombre para mantener los datos de la BD aunque paremos el contenedor
 volumes:
   mysql_data:

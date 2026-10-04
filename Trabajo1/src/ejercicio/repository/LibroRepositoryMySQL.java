@@ -9,13 +9,29 @@ import java.util.List;
 
 import ejercicio.model.Libro;
 import ejercicio.util.ConexionBD;
-
+/**
+ * Gestiona los libros utilizando una base de datos MySQL.
+ *
+ * @author Fabricio
+ * @author Luis
+ * @since 1.0
+ */
 public class LibroRepositoryMySQL implements LibroRepository {
 
+	/**
+	 * Crea un repositorio para trabajar con MySQL.
+	 */
     public LibroRepositoryMySQL() {
         super();
     }
 
+    /**
+     * Crea un libro con los datos obtenidos de la base de datos.
+     *
+     * @param rs resultado de la consulta de la base de datos
+     * @return libro creado con los datos obtenidos
+     * @throws SQLException si ocurre un error al obtener los datos
+     */
     private Libro mapear(ResultSet rs) throws SQLException {
         String id = rs.getString("id");
         String titulo = rs.getString("titulo");
@@ -24,7 +40,11 @@ public class LibroRepositoryMySQL implements LibroRepository {
         int stock = rs.getInt("stock");
         return new Libro(id, titulo, autor, precio, stock);
     }
-
+    /**
+     * Devuelve todos los libros guardados en MySQL.
+     *
+     * @return lista con todos los libros
+     */
     @Override
     public List<Libro> obtenerTodos() {
         List<Libro> libros = new ArrayList<>();
@@ -47,6 +67,12 @@ public class LibroRepositoryMySQL implements LibroRepository {
         return libros;
     }
 
+    /**
+     * Busca libros por su título.
+     *
+     * @param titulo título que se quiere buscar
+     * @return lista de libros que coinciden con el título
+     */
     @Override
     public List<Libro> buscarPorTitulo(String titulo) {
         List<Libro> libros = new ArrayList<>();
@@ -73,6 +99,12 @@ public class LibroRepositoryMySQL implements LibroRepository {
         return libros;
     }
 
+    /**
+     * Busca libros por su autor.
+     *
+     * @param autor autor que se quiere buscar
+     * @return lista de libros que coinciden con el autor
+     */
     @Override
     public List<Libro> buscarPorAutor(String autor) {
         List<Libro> libros = new ArrayList<>();
@@ -99,6 +131,13 @@ public class LibroRepositoryMySQL implements LibroRepository {
         return libros;
     }
 
+    /**
+     * Busca libros dentro de un rango de precios.
+     *
+     * @param precioMin precio mínimo
+     * @param precioMax precio máximo
+     * @return lista de libros que están dentro del rango
+     */
     @Override
     public List<Libro> buscarPorRangoPrecio(double precioMin, double precioMax) {
         List<Libro> libros = new ArrayList<>();
@@ -124,6 +163,13 @@ public class LibroRepositoryMySQL implements LibroRepository {
         return libros;
     }
 
+    
+    /**
+     * Busca libros que tengan un stock mínimo.
+     *
+     * @param stockMinimo cantidad mínima de stock
+     * @return lista de libros que cumplen el stock mínimo
+     */
     @Override
     public List<Libro> buscarPorStockMinimo(int stockMinimo) {
         List<Libro> libros = new ArrayList<>();
@@ -148,6 +194,13 @@ public class LibroRepositoryMySQL implements LibroRepository {
         return libros;
     }
 
+    
+    /**
+     * Inserta un libro en la base de datos.
+     *
+     * @param libro libro que se quiere insertar
+     * @return true si se ha insertado correctamente, false en caso contrario
+     */
     @Override
     public boolean insertar(Libro libro) {
         if (libro == null) return false;
@@ -174,6 +227,13 @@ public class LibroRepositoryMySQL implements LibroRepository {
         }
     }
 
+    
+    /**
+     * Elimina un libro por su título.
+     *
+     * @param titulo título del libro que se quiere eliminar
+     * @return true si se ha eliminado correctamente, false en caso contrario
+     */
     @Override
     public boolean eliminarPorTitulo(String titulo) {
         if (titulo == null) return false;
@@ -195,6 +255,12 @@ public class LibroRepositoryMySQL implements LibroRepository {
         }
     }
 
+    /**
+     * Elimina un libro por su id.
+     *
+     * @param id identificador del libro que se quiere eliminar
+     * @return true si se ha eliminado correctamente, false en caso contrario
+     */
     @Override
     public boolean eliminarPorId(String id) {
         if (id == null) return false;
@@ -216,6 +282,12 @@ public class LibroRepositoryMySQL implements LibroRepository {
         }
     }
 
+    /**
+     * Copia los libros de este repositorio en otro repositorio.
+     *
+     * @param destino repositorio donde se copiarán los libros
+     * @return true si la copia se realiza correctamente, false en caso contrario
+     */
     @Override
     public boolean copiar(LibroRepository destino) {
         if (destino == null) return false;
@@ -242,7 +314,13 @@ public class LibroRepositoryMySQL implements LibroRepository {
         System.out.println("Copia realizada: " + copiados + " insertados, " + yaExisten + " ya existian.");
         return copiados + yaExisten == misLibros.size();
     }
-
+    /**
+     * Comprueba si existe un libro con el id indicado.
+     *
+     * @param lista lista de libros donde se quiere buscar
+     * @param id identificador del libro que se quiere comprobar
+     * @return true si existe un libro con ese id, false en caso contrario
+     */
     private boolean contieneId(List<Libro> lista, String id) {
         for (Libro libro : lista) {
             if (libro.getId().equalsIgnoreCase(id)) {

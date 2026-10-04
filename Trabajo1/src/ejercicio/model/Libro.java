@@ -136,41 +136,86 @@ public class Libro {
     public String getTitulo() {
         return titulo;
     }
-
+    /**
+     * Asigna un título al libro.
+     *
+     * @param titulo título que se asigna al libro
+     */
     public void setTitulo(String titulo) {
         this.titulo = titulo != null ? titulo.trim() : "";
     }
 
+    /**
+     * Devuelve el autor del libro.
+     *
+     * @return autor del libro
+     */
     public String getAutor() {
         return autor;
     }
 
+    
+    /**
+     * Asigna un autor al libro.
+     *
+     * @param autor autor que se asigna al libro
+     */
     public void setAutor(String autor) {
         this.autor = autor != null ? autor.trim() : "";
     }
 
+    
+    /**
+     * Devuelve el precio del libro.
+     *
+     * @return precio del libro
+     */
     public double getPrecio() {
         return precio;
     }
 
+    /**
+     * Asigna un precio al libro.
+     *
+     * @param precio precio que se asigna al libro
+     */
     public void setPrecio(double precio) {
         this.precio = precio;
     }
-
+    /**
+     * Devuelve el stock disponible del libro.
+     *
+     * @return cantidad de libros disponibles
+     */
     public int getStock() {
         return stock;
     }
-
+    /**
+     * Asigna la cantidad de stock disponible del libro.
+     *
+     * @param stock cantidad de libros disponibles
+     */
     public void setStock(int stock) {
         this.stock = stock;
     }
 
+    /**
+     * Devuelve los datos del libro en forma de texto.
+     *
+     * @return datos del libro
+     */
     @Override
     public String toString() {
         return "id=" + id + ", titulo=" + titulo + ", autor=" + autor
                 + ", precio=" + precio + ", stock=" + stock;
     }
 
+    /**
+     * Compara este libro con otro libro utilizando su id.
+     *
+     * @param objeto objeto que se quiere comparar
+     * @return true si los dos libros tienen el mismo id, false en caso contrario
+     */
     @Override
     public boolean equals(Object objeto) {
         if (this == objeto) {
@@ -182,6 +227,11 @@ public class Libro {
         return Objects.equals(id, otroLibro.id);
     }
 
+    /**
+     * Devuelve un código hash basado en el id del libro.
+     *
+     * @return código hash del libro
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id);

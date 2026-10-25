@@ -53,7 +53,7 @@ La aplicación levanta el contenedor, espera a MySQL y la base de datos se carga
 
 **El puerto 3306 tiene que estar libre.** Antes de ejecutar, para cualquier otro MySQL o contenedor que lo use. Si no, la aplicación puede decir «Contenedor MySQL iniciado correctamente» y, tras 60 segundos, «MySQL no responde», y seguirá sin base de datos.
 
-`sql/init.sql` solo se ejecuta la primera vez que se crea el volumen. Para cambiar la contraseña de root o volver a los datos iniciales, desde la raíz del proyecto (**sin comprobar**):
+`sql/init.sql` solo se ejecuta la primera vez que se crea el volumen. Para cambiar la contraseña de root o volver a los datos iniciales, desde la raíz del proyecto:
 
 ```cmd
 docker compose down -v

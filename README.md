@@ -1,128 +1,84 @@
 # Biblioteca
 
-Aplicación Java de consola para gestionar libros. Guarda los datos en dos repositorios intercambiables: un archivo de texto (`data/libros.txt`) y una base de datos MySQL. Al arrancar se elige uno y los dos se sincronizan.
+Sistema de Gestión de Biblioteca en Java (consola). Los libros se guardan en un archivo de texto (`data/libros.txt`) y en MySQL, y al arrancar se sincronizan los dos.
 
-## Elige cómo desplegar
+## Requisitos
 
-| | Ruta A: MySQL en Docker | Ruta B: MySQL instalado |
-|---|---|---|
-| Necesita | Docker Desktop | MySQL Server 8.x en Windows |
-| Base de datos | La crea el contenedor sola con `sql/init.sql` | La creas tú con `sql/init.sql` |
-| Usuario | `root` | El tuyo |
-| Cuándo conviene | Tienes Docker o puedes instalarlo | No tienes Docker o ya tienes MySQL |
-
-El código y el repositorio son los mismos. Al arrancar, la aplicación mira si hay Docker: si lo hay, levanta el contenedor (Ruta A); si no, usa el MySQL que diga el `.env` (Ruta B).
-
-## Requisitos comunes
-
-- JDK 17 o superior (probado con JDK 24)
+- JDK 17 o superior
 - Git
-- Eclipse IDE for Enterprise Java and Web Developers (2026-09)
+- Eclipse IDE for Enterprise Java and Web Developers
+- MySQL, de una de estas dos formas:
+  - Ruta A: Docker Desktop (la aplicación levanta MySQL sola)
+  - Ruta B: MySQL Server 8 instalado en Windows
 
-## Pasos comunes
+## Instalación
 
-1. Clona el repositorio:
+1. Clonar el repositorio:
 
    ```cmd
    git clone https://github.com/Luisparrach22/Biblioteca.git
-   cd Biblioteca
    ```
 
-2. Copia la plantilla de configuración:
+2. Copiar `.env.example` como `.env` y rellenarlo según la ruta (ver abajo).
+3. En Eclipse: File → Import → Existing Projects into Workspace y elegir la carpeta clonada. Las librerías de `lib/` ya están añadidas.
+4. Ejecutar con Run → `Biblioteca`.
 
-   ```cmd
-   copy .env.example .env
-   notepad .env
-   ```
+En Eclipse no se ven los archivos que empiezan por punto, como el `.env`. Para verlos: en el Package Explorer, Filters y quitar `.* resources`.
 
-   Los valores dependen de la ruta (ver [Variables del .env](#variables-del-env)).
+### Ruta A: Docker
 
-3. Abre el proyecto en Eclipse: File → Import → General → Existing Projects into Workspace → Select root directory: la carpeta clonada → Finish.
+- Abrir Docker Desktop antes de ejecutar.
+- En el `.env` dejar `DB_URL` y `DB_USER=root` como están y poner una contraseña en `DB_PASS`.
+- La aplicación arranca el contenedor y la base de datos se crea sola con `sql/init.sql`. Al salir, lo para.
+- El puerto 3306 tiene que estar libre (sin otro MySQL encendido).
+- Para borrar los datos o cambiar la contraseña: `docker compose down -v`
 
-   El proyecto `Biblioteca` ya viene configurado: código fuente en `Trabajo1/src`, librerías de `lib/` y la configuración de ejecución `Biblioteca`. No hay que añadir nada al Build Path. Eclipse necesita un JDK 17 o superior (Window → Preferences → Java → Installed JREs).
+### Ruta B: MySQL instalado
 
-Para ejecutar la aplicación (en las dos rutas): Run → Run Configurations → Java Application → `Biblioteca` → Run. Después ya aparece en el desplegable del botón Run. La consola de Eclipse es donde se escriben las opciones del menú.
+- Crear la base de datos desde cmd (no PowerShell), en la carpeta del proyecto (sin probar):
 
-## Ruta A: MySQL en Docker
+  ```cmd
+  mysql -u root -p < sql\init.sql
+  ```
 
-1. Instala Docker Desktop y ábrelo.
-2. En el `.env` pon `DB_USER=root` y en `DB_PASS` la contraseña que quieras para root. Deja `DB_URL` como está.
-3. En Eclipse ejecuta la configuración `Biblioteca` (ver [Pasos comunes](#pasos-comunes)).
-
-La aplicación levanta el contenedor, espera a MySQL y la base de datos se carga sola con `sql/init.sql`. Al salir, para el contenedor.
-
-**El puerto 3306 tiene que estar libre.** Antes de ejecutar, para cualquier otro MySQL o contenedor que lo use. Si no, la aplicación puede decir «Contenedor MySQL iniciado correctamente» y, tras 60 segundos, «MySQL no responde», y seguirá sin base de datos.
-
-`sql/init.sql` solo se ejecuta la primera vez que se crea el volumen. Para cambiar la contraseña de root o volver a los datos iniciales, desde la raíz del proyecto:
-
-```cmd
-docker compose down -v
-```
-
-## Ruta B: MySQL instalado
-
-1. Instala MySQL Server 8.x. Deja el servicio arrancado y apunta la contraseña de root.
-2. Crea la base de datos. Usa **cmd**, no PowerShell (en PowerShell no funciona `<`). Desde la raíz del proyecto (**sin comprobar**):
-
-   ```cmd
-   mysql -u root -p < sql\init.sql
-   ```
-
-   Si `mysql` no se reconoce, usa la ruta completa (cambia `8.0` por tu versión):
-
-   ```cmd
-   "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p < sql\init.sql
-   ```
-
-   El script crea la base de datos `biblioteca` y la tabla `libros` con libros de ejemplo. **Borra los datos que hubiera en la tabla.** Se puede ejecutar varias veces.
-
-3. En el `.env` pon tu usuario y tu contraseña de MySQL, y `DB_URL` apuntando a tu servidor.
-4. En Eclipse ejecuta la configuración `Biblioteca` (ver [Pasos comunes](#pasos-comunes)).
-
-Si además tienes Docker instalado, la aplicación intentará levantar el contenedor. Como tu MySQL ya ocupa el puerto 3306, se conectará a tu MySQL igualmente. Puede que diga «Contenedor MySQL iniciado correctamente»: es normal.
+  Si no encuentra `mysql`, usar la ruta completa: `"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe"`. El script borra los datos que hubiera en la tabla `libros`.
+- En el `.env` poner tu usuario y tu contraseña de MySQL.
 
 ## Variables del .env
 
-El archivo `.env` va en la raíz del proyecto. No se sube a git.
+| Variable | Ruta A | Ruta B |
+|---|---|---|
+| `DB_URL` | `jdbc:mysql://localhost:3306/biblioteca` | La de tu servidor |
+| `DB_USER` | `root` | Tu usuario |
+| `DB_PASS` | La que quieras | Tu contraseña |
 
-La aplicación solo usa estas tres variables. El `.env.example` trae también `DB_HOST`, `DB_PORT`, `DB_NAME` y `DB_PASSWORD`, pero la aplicación no las lee: el servidor, el puerto y la base de datos se cambian en `DB_URL`, y la contraseña en `DB_PASS`.
+`DB_HOST`, `DB_PORT`, `DB_NAME` y `DB_PASSWORD` no se usan.
 
-| Variable | Para qué sirve | Ruta A (Docker) | Ruta B (MySQL instalado) |
-|---|---|---|---|
-| `DB_URL` | URL JDBC: servidor, puerto y base de datos | `jdbc:mysql://localhost:3306/biblioteca` | `jdbc:mysql://<servidor>:<puerto>/biblioteca` |
-| `DB_USER` | Usuario de MySQL | `root` | Tu usuario |
-| `DB_PASS` | Contraseña del usuario | La que tendrá root en el contenedor | Tu contraseña |
+## Generar el .jar
 
-## Ejecutar con el .jar
-
-Para generar el .jar en Eclipse:
-
-1. Clic derecho en el proyecto → Export → Java → Runnable JAR file.
-2. Launch configuration: `Biblioteca - Biblioteca`.
-3. Export destination: `dist\Biblioteca.jar`.
-4. Library handling: **Copy required libraries into a sub-folder next to the generated JAR**.
-
-Eclipse crea `dist\Biblioteca.jar` y la carpeta `dist\Biblioteca_lib\`. Ejecuta desde la **raíz del proyecto**, no desde `dist\`, porque ahí se buscan `.env`, `docker-compose.yml` y `data\libros.txt` (**sin comprobar**):
+En Eclipse: Export → Runnable JAR file → `dist\Biblioteca.jar`, marcando "Copy required libraries into a sub-folder next to the generated JAR". Se ejecuta desde la carpeta del proyecto, no desde `dist` (sin probar):
 
 ```cmd
 java -jar dist\Biblioteca.jar
 ```
 
-## Estructura
+## Uso
 
-```
-Trabajo1/src/ejercicio/   Código fuente (clase principal: ejercicio.Main)
-data/libros.txt           Repositorio de texto (campos separados por ^)
-sql/init.sql              Script de la base de datos (las dos rutas)
-docker-compose.yml        Contenedor MySQL (solo Ruta A)
-lib/                      Librerías (.jar), ya incluidas
-.project, .classpath      Proyecto de Eclipse
-Biblioteca.launch         Configuración de ejecución de Eclipse
-doc/                      JavaDoc generado
-.env.example              Plantilla de configuración
-```
+Al iniciar se elige el repositorio activo (archivo o MySQL) y se sincronizan ambos.
+
+| Opción | Descripción |
+|---|---|
+| 1 | Listado de todos los libros |
+| 2 | Buscar por título |
+| 3 | Buscar por autor |
+| 4 | Buscar por rango de precios |
+| 5 | Buscar por stock mínimo |
+| 6 | Insertar nuevo libro |
+| 7 | Eliminar libro (por título; si hay varios, se elige por ID) |
+| 8 | Copiar datos al otro repositorio |
+| 9 | Salir |
 
 ## Documentación
 
-- Manual de despliegue (PDF): _pendiente_ <!-- enlace al PDF -->
+- Manual de despliegue: pendiente
 - JavaDoc: [doc/index.html](doc/index.html)

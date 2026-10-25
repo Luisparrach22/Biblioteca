@@ -51,6 +51,8 @@ Para ejecutar la aplicación (en las dos rutas): Run → Run Configurations → 
 
 La aplicación levanta el contenedor, espera a MySQL y la base de datos se carga sola con `sql/init.sql`. Al salir, para el contenedor.
 
+**El puerto 3306 tiene que estar libre.** Antes de ejecutar, para cualquier otro MySQL o contenedor que lo use. Si no, la aplicación puede decir «Contenedor MySQL iniciado correctamente» y, tras 60 segundos, «MySQL no responde», y seguirá sin base de datos.
+
 `sql/init.sql` solo se ejecuta la primera vez que se crea el volumen. Para cambiar la contraseña de root o volver a los datos iniciales, desde la raíz del proyecto (**sin comprobar**):
 
 ```cmd
@@ -77,7 +79,7 @@ docker compose down -v
 3. En el `.env` pon tu usuario y tu contraseña de MySQL, y `DB_URL` apuntando a tu servidor.
 4. En Eclipse ejecuta la configuración `Biblioteca` (ver [Pasos comunes](#pasos-comunes)).
 
-Si además tienes Docker instalado y tu MySQL ya ocupa el puerto 3306, la aplicación avisará de que no pudo iniciar el contenedor y seguirá con tu MySQL.
+Si además tienes Docker instalado, la aplicación intentará levantar el contenedor. Como tu MySQL ya ocupa el puerto 3306, se conectará a tu MySQL igualmente. Puede que diga «Contenedor MySQL iniciado correctamente»: es normal.
 
 ## Variables del .env
 

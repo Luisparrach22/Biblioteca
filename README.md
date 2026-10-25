@@ -85,6 +85,8 @@ Si además tienes Docker instalado, la aplicación intentará levantar el conten
 
 El archivo `.env` va en la raíz del proyecto. No se sube a git.
 
+La aplicación solo usa estas tres variables. El `.env.example` trae también `DB_HOST`, `DB_PORT`, `DB_NAME` y `DB_PASSWORD`, pero la aplicación no las lee: el servidor, el puerto y la base de datos se cambian en `DB_URL`, y la contraseña en `DB_PASS`.
+
 | Variable | Para qué sirve | Ruta A (Docker) | Ruta B (MySQL instalado) |
 |---|---|---|---|
 | `DB_URL` | URL JDBC: servidor, puerto y base de datos | `jdbc:mysql://localhost:3306/biblioteca` | `jdbc:mysql://<servidor>:<puerto>/biblioteca` |

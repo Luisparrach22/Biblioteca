@@ -76,41 +76,36 @@ public class Main {
         
         System.out.println("Verificando Docker...");
 
-        // Comprobamos si Docker esta instalado en el equipo
-        if (!ejecutarComando("docker --version")) {
-            System.out.println("ERROR: Docker no esta instalado.");
-            System.out.println("Instala Docker Desktop desde: https://www.docker.com/products/docker-desktop/");
-            return;
+        // Comprobamos si Docker esta instalado y Docker Desktop esta abierto y funcionando
+        boolean dockerDisponible = ejecutarComando("docker --version") && ejecutarComando("docker info");
+
+        // Indica si este programa ha levantado el contenedor
+        boolean contenedorIniciado = false;
+
+        if (dockerDisponible) {
+            System.out.println("Docker detectado correctamente.");
+            String rutaCompose = Paths.get(System.getProperty("user.dir"), "docker-compose.yml").toString();
+
+            // Levantamos el contenedor de MySQL
+            System.out.println("Iniciando contenedor MySQL...");
+            boolean levantado = ejecutarComando("docker compose -f \"" + rutaCompose + "\" up -d");
+
+            if (!levantado) {
+                levantado = ejecutarComando("docker-compose -f \"" + rutaCompose + "\" up -d");
+            }
+
+            if (levantado) {
+                contenedorIniciado = true;
+                System.out.println("Contenedor MySQL iniciado correctamente.");
+            } else {
+                // Si el contenedor no arranca seguimos con el MySQL del .env
+                System.out.println("Aviso: No se pudo iniciar el contenedor; se intentara usar el MySQL configurado en el .env");
+            }
+        } else {
+            // Sin Docker nos conectamos al MySQL instalado que indique el .env
+            System.out.println("Docker no esta disponible: se usara el MySQL configurado en el .env");
         }
 
-        // Comprobamos si Docker Desktop esta abierto y funcionando
-        if (!ejecutarComando("docker info")) {
-            System.out.println("ERROR: Docker no esta ejecutandose.");
-            System.out.println("Abre Docker Desktop y vuelve a intentarlo.");
-            return;
-        }
-
-        System.out.println("Docker detectado correctamente.");
-
-        // Obtenemos la ruta del archivo docker-compose.yml en la raiz
-        String rutaCompose = Paths.get(System.getProperty("user.dir"), "docker-compose.yml").toString();
-
-        // Levantamos el contenedor de MySQL en segundo plano
-        System.out.println("Iniciando contenedor MySQL...");
-        boolean levantado = ejecutarComando("docker compose -f \"" + rutaCompose + "\" up -d");
-
-        // Probamos con la sintaxis antigua con guion por si acaso
-        if (!levantado) {
-            levantado = ejecutarComando("docker-compose -f \"" + rutaCompose + "\" up -d");
-        }
-
-        if (!levantado) {
-            System.out.println("ERROR: No se pudo iniciar docker-compose.");
-            System.out.println("Asegurate de que docker-compose.yml esta en la raiz del proyecto.");
-            return;
-        }
-
-        System.out.println("Contenedor MySQL iniciado correctamente.");
         esperarMySQL();
         System.out.println();
 
@@ -318,12 +313,16 @@ public class Main {
 
         sc.close();
         
-        // Al terminar el programa, apagamos el contenedor de MySQL
-        System.out.println("Deteniendo contenedor MySQL...");
-        String rutaCompose2 = Paths.get(System.getProperty("user.dir"), "docker-compose.yml").toString();
-        if (!ejecutarComando("docker compose -f \"" + rutaCompose2 + "\" down")) {
-            ejecutarComando("docker-compose -f \"" + rutaCompose2 + "\" down");
+        // apagamos el contenedor de MySQL
+        if (contenedorIniciado) {
+            System.out.println("Deteniendo contenedor MySQL...");
+            String rutaCompose2 = Paths.get(System.getProperty("user.dir"), "docker-compose.yml").toString();
+            if (!ejecutarComando("docker compose -f \"" + rutaCompose2 + "\" down")) {
+                ejecutarComando("docker-compose -f \"" + rutaCompose2 + "\" down");
+            }
+            System.out.println("Contenedor detenido. Hasta luego!");
+        } else {
+            System.out.println("Hasta luego!");
         }
-        System.out.println("Contenedor detenido. Hasta luego!");
     }
 }

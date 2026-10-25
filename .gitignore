@@ -2,10 +2,6 @@
 .metadata/
 .idea/
 *.iml
-.classpath
-**/.classpath
-.project
-**/.project
 .settings/
 **/.settings/
 *.pref
@@ -23,6 +19,7 @@ dist/
 target/
 **/target/
 *.jar
+!lib/*.jar
 *.war
 *.ear
 
@@ -36,3 +33,6 @@ Thumbs.db
 config.properties
 .env
 !.env.example
+
+# NetBeans
+nbproject/private/

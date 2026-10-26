@@ -34,5 +34,8 @@ config.properties
 .env
 !.env.example
 
+# Copias de seguridad (scripts\backup_*.bat)
+backups/
+
 # NetBeans
 nbproject/private/

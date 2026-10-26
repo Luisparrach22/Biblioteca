@@ -78,6 +78,21 @@ Al iniciar se elige el repositorio activo (archivo o MySQL) y se sincronizan amb
 | 8 | Copiar datos al otro repositorio |
 | 9 | Salir |
 
+## Administración
+
+Scripts para cmd (no PowerShell). Se pueden lanzar desde cualquier carpeta. Los de base de datos usan Docker si el contenedor `mysql` está en marcha y, si no, el MySQL instalado. Las copias se guardan en `backups\`.
+
+```cmd
+scripts\backup_bd.bat
+scripts\restaurar_bd.bat backups\biblioteca_2026-10-25_1730.sql
+scripts\reiniciar_bd.bat
+scripts\backup_txt.bat
+scripts\restaurar_txt.bat backups\libros_2026-10-25_1730.txt
+```
+
+- `reiniciar_bd.bat` hace antes una copia con `backup_bd.bat` y después vuelve a cargar `sql\init.sql`.
+- Antes de `restaurar_txt.bat`, cerrar la aplicación.
+
 ## Documentación
 
 - Manual de despliegue: pendiente

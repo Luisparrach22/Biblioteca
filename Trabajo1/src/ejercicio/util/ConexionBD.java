@@ -56,4 +56,16 @@ public class ConexionBD {
             return false;
         }
     }
+    /**
+     * Comprueba la conexión con la base de datos sin ocultar la causa si falla.
+     * A diferencia de estaDisponible(), deja pasar la excepción original.
+     *
+     * @throws Exception el error original: SQLException del driver, DotenvException si falta el .env
+     *                   o ClassNotFoundException si falta el driver de MySQL
+     */
+    public static void comprobarConexion() throws Exception {
+        try (Connection conn = conectar()) {
+            // Si conectar() no lanza ninguna excepción, la conexión es válida
+        }
+    }
 }

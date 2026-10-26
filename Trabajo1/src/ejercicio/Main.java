@@ -1,6 +1,8 @@
 package ejercicio;
 
+import java.net.ConnectException;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -10,6 +12,7 @@ import ejercicio.repository.LibroRepositoryArchivo;
 import ejercicio.repository.LibroRepositoryMySQL;
 import ejercicio.util.ConexionBD;
 import ejercicio.util.Sincronizador;
+import io.github.cdimascio.dotenv.DotenvException;
 
 /**
  * Clase principal de la aplicacion de Gestion de Biblioteca.
@@ -48,16 +51,44 @@ public class Main {
     }
 
     /**
-     * Revisa en bucle durante un maximo de 60 segundos si MySQL ya acepta conexiones.
+     * Comprueba si MySQL acepta conexiones.
+     * Si acabamos de levantar el contenedor, MySQL tarda en arrancar y se revisa en bucle
+     * durante un maximo de 60 segundos. Si no, se comprueba una sola vez para no hacer esperar.
+     * Solo se reintenta ante fallos de comunicacion (el servidor aun no acepta conexiones);
+     * cualquier otro error se muestra al momento con su mensaje original.
+     *
+     * @param contenedorIniciado true si este programa acaba de levantar el contenedor
+     * @return true si MySQL esta disponible
      */
-    private static void esperarMySQL() {
+    private static boolean esperarMySQL(boolean contenedorIniciado) {
+        if (!contenedorIniciado) {
+            System.out.print("Comprobando MySQL...");
+            try {
+                ConexionBD.comprobarConexion();
+                System.out.println(" OK");
+                return true;
+            } catch (Exception e) {
+                System.out.println();
+                mostrarErrorMySQL(e);
+                return false;
+            }
+        }
+
         System.out.print("Esperando a que MySQL este disponible");
         long limite = System.currentTimeMillis() + 60_000L;
 
         while (System.currentTimeMillis() < limite) {
-            if (ConexionBD.estaDisponible()) {
+            try {
+                ConexionBD.comprobarConexion();
                 System.out.println(" OK");
-                return;
+                return true;
+            } catch (Exception e) {
+                // Esperar solo sirve si el servidor todavia esta arrancando
+                if (!esFalloDeComunicacion(e)) {
+                    System.out.println();
+                    mostrarErrorMySQL(e);
+                    return false;
+                }
             }
             System.out.print(".");
             try {
@@ -70,6 +101,54 @@ public class Main {
 
         System.out.println();
         System.out.println("Aviso: MySQL no responde, se continuara sin el.");
+        return false;
+    }
+
+    /**
+     * Indica si el error es un fallo de comunicacion: el servidor no responde o rechaza la conexion.
+     * Son los unicos errores que pueden arreglarse solos esperando a que MySQL termine de arrancar.
+     */
+    private static boolean esFalloDeComunicacion(Exception e) {
+        for (Throwable t = e; t != null; t = t.getCause()) {
+            if (t instanceof ConnectException) {
+                return true;
+            }
+        }
+        if (e instanceof SQLException) {
+            String estado = ((SQLException) e).getSQLState();
+            String mensaje = String.valueOf(e.getMessage());
+            // 08001 tambien lo usa "No suitable driver found", que no es un fallo de comunicacion
+            return "08S01".equals(estado) || mensaje.startsWith("Communications link failure");
+        }
+        return false;
+    }
+
+    /**
+     * Muestra el mensaje original del error de conexion y, debajo, una pista para arreglarlo.
+     */
+    private static void mostrarErrorMySQL(Exception e) {
+        // Fuera de SQLException el mensaje solo no se entiende (ClassNotFoundException da solo el
+        // nombre de la clase), asi que se muestra tambien el tipo de excepcion
+        System.out.println("Error de MySQL: " + (e instanceof SQLException ? e.getMessage() : e.toString()));
+
+        String mensaje = String.valueOf(e.getMessage());
+        String pista;
+        if (e instanceof DotenvException) {
+            pista = "Copia .env.example como .env en la carpeta del proyecto";
+        } else if (e instanceof ClassNotFoundException || mensaje.startsWith("No suitable driver")) {
+            pista = "Revisa que mysql-connector-j este en el classpath y que DB_URL empiece por jdbc:mysql://";
+        } else if (mensaje.contains("Public Key Retrieval")) {
+            pista = "Anade ?allowPublicKeyRetrieval=true&useSSL=false al final de DB_URL en el .env";
+        } else if (esFalloDeComunicacion(e)) {
+            pista = "Comprueba que MySQL esta arrancado y que el host y el puerto de DB_URL son correctos";
+        } else if (e instanceof SQLException && ((SQLException) e).getErrorCode() == 1045) {
+            pista = "Revisa DB_USER y DB_PASS en el .env";
+        } else if (e instanceof SQLException && ((SQLException) e).getErrorCode() == 1049) {
+            pista = "Revisa el nombre de la base de datos en DB_URL o crea la base de datos con sql\\init.sql";
+        } else {
+            pista = "Revisa DB_URL, DB_USER y DB_PASS en el .env";
+        }
+        System.out.println(pista);
     }
 
     public static void main(String[] args) {
@@ -106,18 +185,31 @@ public class Main {
             System.out.println("Docker no esta disponible: se usara el MySQL configurado en el .env");
         }
 
-        esperarMySQL();
+        boolean mysqlDisponible = esperarMySQL(contenedorIniciado);
         System.out.println();
 
         Scanner sc = new Scanner(System.in);
 
-        // Elegimos cual sera la fuente principal de datos
+        // Elegimos cual sera la fuente principal de datos (sin MySQL solo queda el archivo)
         System.out.println("--- Gestion Biblioteca  ---");
         System.out.println("1. Archivo (.txt)");
-        System.out.println("2. MySQL");
-        System.out.print("Seleccione repositorio: ");
+        if (mysqlDisponible) {
+            System.out.println("2. MySQL");
+        }
 
-        int opcionRepo = Integer.parseInt(sc.nextLine());
+        int opcionRepo;
+        do {
+            System.out.print("Seleccione repositorio: ");
+            try {
+                opcionRepo = Integer.parseInt(sc.nextLine().trim());
+            } catch (NumberFormatException e) {
+                opcionRepo = 0;
+            }
+            if (opcionRepo != 1 && !(opcionRepo == 2 && mysqlDisponible)) {
+                System.out.println("Opción no válida.");
+                opcionRepo = 0;
+            }
+        } while (opcionRepo == 0);
 
         LibroRepository repo;
         LibroRepository repoDestino;
